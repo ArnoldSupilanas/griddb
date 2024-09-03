@@ -1,0 +1,142 @@
+#include <iostream>
+#include <filesystem>
+#include <direct.h>
+#include <string>
+#include <vector>
+
+void list_files();
+void create_directory();
+void change_directory();
+void main_menu();
+
+int main() {
+    while (true) {
+        main_menu();
+    }
+    return 0;
+}
+
+void main_menu() {
+    int choice;
+    std::cout << "Main Menu:\n";
+    std::cout << "1. List files\n";
+    std::cout << "2. Create a new directory\n";
+    std::cout << "3. Change the working directory\n";
+    std::cout << "4. Exit\n";
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            list_files();
+            break;
+        case 2:
+            create_directory();
+            break;
+        case 3:
+            change_directory();
+            break;
+        case 4:
+            std::cout << "Exiting program...\n";
+            exit(0);
+        default:
+            std::cout << "Invalid choice. Please try again.\n";
+    }
+}
+
+void list_files() {
+    int choice;
+    std::cout << "List Files:\n";
+    std::cout << "1. List all files in the current directory\n";
+    std::cout << "2. List files based on a specific extension (e.g., .txt)\n";
+    std::cout << "3. List files based on a pattern (e.g., moha*.*)\n";
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    std::string pattern;
+    std::string extension;
+    std::filesystem::path current_path = std::filesystem::current_path();
+    switch (choice) {
+        case 1:
+            for (const auto &entry : std::filesystem::directory_iterator(current_path)) {
+                std::cout << entry.path().filename().string() << std::endl;
+            }
+            break;
+        case 2:
+            std::cout << "Enter file extension (e.g., .txt): ";
+            std::cin >> extension;
+            for (const auto &entry : std::filesystem::directory_iterator(current_path)) {
+                if (entry.path().extension() == extension) {
+                    std::cout << entry.path().filename().string() << std::endl;
+                }
+            }
+            break;
+        case 3:
+            std::cout << "Enter pattern (e.g., moha*.*): ";
+            std::cin >> pattern;
+            for (const auto &entry : std::filesystem::directory_iterator(current_path)) {
+                if (entry.path().filename().string().find(pattern) != std::string::npos) {
+                    std::cout << entry.path().filename().string() << std::endl;
+                }
+            }
+            break;
+        default:
+            std::cout << "Invalid choice.\n";
+    }
+}
+
+void create_directory() {
+    std::string dir_name;
+    std::cout << "Enter the name of the directory to create: ";
+    std::cin >> dir_name;
+
+    if (_mkdir(dir_name.c_str()) == 0) {
+        std::cout << "Directory created successfully.\n";
+    } else {
+        std::cout << "Directory could not be created. It may already exist.\n";
+    }
+}
+
+void change_directory() {
+    int choice;
+    std::string dir_name;
+    std::cout << "Change Directory:\n";
+    std::cout << "1. Move one step back (to the parent directory)\n";
+    std::cout << "2. Move to the root directory\n";
+    std::cout << "3. Move to a specific directory\n";
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            std::filesystem::current_path("..");
+            std::cout << "Moved one step back.\n";
+            break;
+        case 2:
+            std::filesystem::current_path("/");
+            std::cout << "Moved to the root directory.\n";
+            break;
+        case 3:
+            std::cout << "Enter the directory to move to: ";
+            std::cin >> dir_name;
+            if (std::filesystem::exists(dir_name) && std::filesystem::is_directory(dir_name)) {
+                std::filesystem::current_path(dir_name);
+                std::cout << "Directory changed successfully.\n";
+            } else {
+                std::cout << "Directory not found.\n";
+            }
+            break;
+        default:
+            std::cout << "Invalid choice.\n";
+    }
+}
+
+
+
+
+
+
+
+
+
+
